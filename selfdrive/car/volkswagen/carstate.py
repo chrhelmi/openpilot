@@ -262,6 +262,9 @@ class CarState(CarStateBase):
       ret.cruiseState.available = False
       ret.cruiseState.enabled = False
 
+    # disengage below min steer speed
+    if ret.vEgo < self.CP.minSteerSpeed * 1.1: ret.cruiseState.enabled = False
+
     # Update ACC setpoint. When the setpoint reads as 255, the driver has not
     # yet established an ACC setpoint, so treat it as zero.
     ret.cruiseState.speed = ext_cp.vl["ACC_GRA_Anziege"]["ACA_V_Wunsch"] * CV.KPH_TO_MS
