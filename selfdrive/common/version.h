@@ -1,1 +1,1 @@
-#define COMMA_VERSION "0.8.62-chrhelmi"
+#define COMMA_VERSION "0.8.6-chrhelmi2"
