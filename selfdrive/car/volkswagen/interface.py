@@ -205,6 +205,15 @@ class CarInterface(CarInterfaceBase):
 
     events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport, GearShifter.manumatic])
 
+    if self.CC.pq_timebomb_cnt == 1:
+      events.add(EventName.startup)
+
+    if self.CC.pq_timebomb_cnt == 299*50:  # 299s
+      events.add(EventName.startupMaster)
+
+    if self.CC.pq_timebomb_cnt == 358*50:  # 358s
+      events.add(EventName.steerTempUnavailableSilent)
+
     # Vehicle health and operation safety checks
     if self.CS.parkingBrakeSet:
       events.add(EventName.parkBrake)

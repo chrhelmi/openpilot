@@ -17,6 +17,9 @@ class CarController():
     self.graMsgStartFramePrev = 0
     self.graMsgBusCounterPrev = 0
 
+    self.pq_timebomb_cnt = 0
+    self.pq_timebomb_reset_cnt = 0
+
     if CP.carFingerprint in PQ_CARS:
       self.packer_pt = CANPacker(DBC_FILES.pq)
       self.create_steering_control = volkswagencan.create_pq_steering_control
@@ -59,6 +62,20 @@ class CarController():
         new_steer = int(round(actuators.steer * P.STEER_MAX))
         apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, P)
         self.steer_rate_limited = new_steer != apply_steer
+
+        # try pq timebomb auto reset
+        if self.pq_timebomb_cnt >= 300 * (100 / P.HCA_STEP):  # 300s
+          if self.pq_timebomb_reset_cnt == 0:
+            if new_steer < 10 and new_steer > -10:  # start ignore steer at less than 0.1 Nm
+              apply_steer = 0
+          else:
+            if new_steer < 100 and new_steer > -100:  # abort ignore steer at more than 1 Nm
+              apply_steer = 0
+
+        # forced pq timebomb reset
+        if self.pq_timebomb_cnt >= 359 * (100 / P.HCA_STEP):  # 359s
+          apply_steer = 0
+
         if apply_steer == 0:
           hcaEnabled = False
           self.hcaEnabledFrameCount = 0
@@ -81,6 +98,17 @@ class CarController():
         apply_steer = 0
 
       self.apply_steer_last = apply_steer
+
+      if hcaEnabled:
+        if self.pq_timebomb_cnt < 360 * (100 / P.HCA_STEP):
+          self.pq_timebomb_cnt += 1
+        self.pq_timebomb_reset_cnt = 0
+      else:
+        if self.pq_timebomb_reset_cnt < 1.05 * (100 / P.HCA_STEP):
+          self.pq_timebomb_reset_cnt += 1
+        else:
+          self.pq_timebomb_cnt = 0
+
       idx = (frame / P.HCA_STEP) % 16
       can_sends.append(self.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer,
                                                                  idx, hcaEnabled))
