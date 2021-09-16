@@ -94,15 +94,18 @@ class CarController():
 
       self.apply_steer_last = apply_steer
 
-      if hcaEnabled:
-        if self.pq_timebomb_cnt < 360 * (100 / P.HCA_STEP):
-          self.pq_timebomb_cnt += 1
-        self.pq_timebomb_reset_cnt = 0
-      else:
-        if self.pq_timebomb_reset_cnt < 1.05 * (100 / P.HCA_STEP):
-          self.pq_timebomb_reset_cnt += 1
+      if CP.carFingerprint in PQ_CARS:
+        if hcaEnabled:
+          if self.pq_timebomb_cnt < 360 * (100 / P.HCA_STEP):
+            self.pq_timebomb_cnt += 1
+          self.pq_timebomb_reset_cnt = 0
         else:
-          self.pq_timebomb_cnt = 0
+          if self.pq_timebomb_reset_cnt < 1.05 * (100 / P.HCA_STEP):
+            self.pq_timebomb_reset_cnt += 1
+          else:
+            self.pq_timebomb_cnt = 0
+      else:
+        self.pq_timebomb_cnt = 0
 
       idx = (frame / P.HCA_STEP) % 16
       can_sends.append(self.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer,
