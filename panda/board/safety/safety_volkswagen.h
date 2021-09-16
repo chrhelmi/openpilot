@@ -400,7 +400,7 @@ const safety_hooks volkswagen_pq_hooks = {
   .rx = volkswagen_pq_rx_hook,
   .tx = volkswagen_pq_tx_hook,
   .tx_lin = nooutput_tx_lin_hook,
-  .fwd = volkswagen_fwd_hook,
+  .fwd = default_fwd_hook,
   .addr_check = volkswagen_pq_rx_checks,
   .addr_check_len = sizeof(volkswagen_pq_rx_checks) / sizeof(volkswagen_pq_rx_checks[0]),
 };
