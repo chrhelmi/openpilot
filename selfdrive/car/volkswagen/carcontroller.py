@@ -26,12 +26,14 @@ class CarController():
       self.create_acc_buttons_control = volkswagencan.create_pq_acc_buttons_control
       self.create_hud_control = volkswagencan.create_pq_hud_control
       self.ldw_step = P.PQ_LDW_STEP
+      self.pq_timebomb = True
     else:
       self.packer_pt = CANPacker(DBC_FILES.mqb)
       self.create_steering_control = volkswagencan.create_mqb_steering_control
       self.create_acc_buttons_control = volkswagencan.create_mqb_acc_buttons_control
       self.create_hud_control = volkswagencan.create_mqb_hud_control
       self.ldw_step = P.MQB_LDW_STEP
+      self.pq_timebomb = False
 
     self.steer_rate_limited = False
 
@@ -94,7 +96,7 @@ class CarController():
 
       self.apply_steer_last = apply_steer
 
-      if CP.carFingerprint in PQ_CARS:
+      if self.pq_timebomb:
         if hcaEnabled:
           if self.pq_timebomb_cnt < 360 * (100 / P.HCA_STEP):
             self.pq_timebomb_cnt += 1
