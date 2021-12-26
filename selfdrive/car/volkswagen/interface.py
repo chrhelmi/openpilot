@@ -38,10 +38,10 @@ class CarInterface(CarInterfaceBase):
       else:  # No trans message at all, must be a true stick-shift manual
         ret.transmissionType = TransmissionType.manual
 
-      if 0x1A0 in fingerprint[1] or 0xAE in fingerprint[1]:
-        ret.networkLocation = NetworkLocation.gateway
-      else:
-        ret.networkLocation = NetworkLocation.fwdCamera
+      #if 0x1A0 in fingerprint[1] or 0xAE in fingerprint[1]:
+      ret.networkLocation = NetworkLocation.gateway
+      #else:
+      #ret.networkLocation = NetworkLocation.fwdCamera
 
     else:  # pylint: disable=using-constant-test
       # Set global MQB parameters
